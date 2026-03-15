@@ -20,6 +20,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          env:
+            - name: DATABASE_URL
+              value: "postgres://myuser:mypassword@host.k3d.internal:5432/mydb"
 ---
 apiVersion: v1
 kind: Service
