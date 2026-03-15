@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: api-container
-          image: my-api:v1
-          imagePullPolicy: Never
+          image: ghcr.io/andrzey/my-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
 ---

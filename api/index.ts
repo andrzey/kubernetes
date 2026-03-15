@@ -5,7 +5,7 @@ const app = new Hono();
 
 app.get("/", (c) => {
   return c.json({
-    message: "Hono API kjører i clusteret!",
+    message: "Hono API kjører i clusteret med en endring!",
   });
 });
 

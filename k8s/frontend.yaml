@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: frontend-container
-          image: my-frontend:v1
-          imagePullPolicy: Never
+          image: ghcr.io/andrzey/my-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
 ---
