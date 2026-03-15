@@ -14,7 +14,7 @@ function App() {
   return (
     <div>
       <h1>Frontend i Kubernetes</h1>
-      <p>Her er det kommet en endring!</p>
+      <p>Fanger Keel opp det her?</p>
       <p>
         Hilsen fra API-et: <strong>{message}</strong>
       </p>
