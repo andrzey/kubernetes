@@ -17,6 +17,8 @@ spec:
       labels:
         app: frontend-app
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: frontend-container
           image: ghcr.io/andrzey/my-frontend:latest

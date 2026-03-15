@@ -17,6 +17,8 @@ spec:
       labels:
         app: hono-api
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: api-container
           image: ghcr.io/andrzey/my-api:latest
