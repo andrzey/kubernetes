@@ -14,7 +14,7 @@ export default function SignUp() {
     const { data, error } = await authClient.signUp.email(
       {
         email: "test@test.com",
-        password: "1234",
+        password: "detteermittpassord",
         name: "Andrzej",
         callbackURL: "/dashboard",
       },
