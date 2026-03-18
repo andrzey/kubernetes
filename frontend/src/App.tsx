@@ -1,25 +1,16 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+import { RouterProvider } from "@tanstack/react-router";
+import { StrictMode } from "react";
+import { router } from "./router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-function App() {
-  const [message, setMessage] = useState("Laster fra API...");
-
-  useEffect(() => {
-    fetch("/api")
-      .then((res) => res.text())
-      .then((data) => setMessage(data))
-      .catch((err) => setMessage("Feil ved henting: " + err.message));
-  }, []);
+export const App = () => {
+  const queryClient = new QueryClient();
 
   return (
-    <div>
-      <h1>Frontend i Kubernetes</h1>
-      <p>Sikkert ikke.</p>
-      <p>
-        Hilsen fra API-et: <strong>{message}</strong>
-      </p>
-    </div>
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </StrictMode>
   );
-}
-
-export default App;
+};
