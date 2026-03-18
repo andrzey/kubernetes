@@ -1,15 +1,13 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { getUsers } from "./service.ts";
+import { auth } from "./lib/auth.ts";
 
 const app = new Hono();
 
-app.get("/", async (c) => {
-  const users = await getUsers();
+app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
-  return c.json({
-    message: JSON.stringify(users),
-  });
+app.get("/", async (c) => {
+  return c.json({ message: "Hello, World!" });
 });
 
 app.get("/health", (c) => c.text("OK"));
