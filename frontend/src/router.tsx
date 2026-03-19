@@ -43,11 +43,10 @@ const protectedLayout = createRoute({
 });
 
 const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedLayout,
   path: "/",
-  beforeLoad: async () => {
-    const session = await authClient.getSession();
-    throw redirect({ to: session.data?.user ? "/dashboard" : "/login" });
+  beforeLoad: () => {
+    throw redirect({ to: "/dashboard" });
   },
 });
 
@@ -70,9 +69,8 @@ const dashboardRoute = createRoute({
 });
 
 const routeTree = rootRoute.addChildren([
-  indexRoute,
   authLayout.addChildren([signUpRoute, loginRoute]),
-  protectedLayout.addChildren([dashboardRoute]),
+  protectedLayout.addChildren([indexRoute, dashboardRoute]),
 ]);
 
 export const router = createRouter({ routeTree });
