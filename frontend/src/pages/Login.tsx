@@ -3,27 +3,22 @@ import { authClient } from "../auth";
 import { useNavigate } from "@tanstack/react-router";
 
 type Form = {
-  name: string;
   email: string;
   password: string;
-  confirmPassword: string;
 };
 
-export default function SignUp() {
+export default function Login() {
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<Form>();
 
   const onSubmit = async (data: Form) => {
-    const { error } = await authClient.signUp.email({
-      name: data.name,
+    const { error } = await authClient.signIn.email({
       email: data.email,
       password: data.password,
-      callbackURL: "/dashboard",
     });
 
     if (error) {
@@ -36,14 +31,8 @@ export default function SignUp() {
 
   return (
     <div>
-      <h1>Sign Up</h1>
+      <h1>Log In</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label>Name</label>
-          <input {...register("name", { required: "Name is required" })} />
-          {errors.name && <p>{errors.name.message}</p>}
-        </div>
-
         <div>
           <label>Email</label>
           <input
@@ -57,34 +46,18 @@ export default function SignUp() {
           <label>Password</label>
           <input
             type="password"
-            {...register("password", {
-              required: "Password is required",
-              minLength: { value: 8, message: "Minimum 8 characters" },
-            })}
+            {...register("password", { required: "Password is required" })}
           />
           {errors.password && <p>{errors.password.message}</p>}
         </div>
 
-        <div>
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            {...register("confirmPassword", {
-              required: "Please confirm your password",
-              validate: (val) =>
-                val === watch("password") || "Passwords do not match",
-            })}
-          />
-          {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
-        </div>
-
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating account..." : "Sign Up"}
+          {isSubmitting ? "Logging in..." : "Log In"}
         </button>
       </form>
 
       <p>
-        Already have an account? <a href="/login">Log in</a>
+        Don't have an account? <a href="/signup">Sign up</a>
       </p>
     </div>
   );
