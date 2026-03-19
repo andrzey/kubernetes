@@ -1,7 +1,8 @@
 import { authClient } from "../auth";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import AddSpending from "../components/AddSpending";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "../lib/apiFetch";
+import AddSpending from "./AddSpending";
 
 type Spending = {
   id: string;
@@ -14,27 +15,28 @@ type Spending = {
 export default function Dashboard() {
   const navigate = useNavigate();
   const { data: session } = authClient.useSession();
-  const [spendings, setSpendings] = useState<Spending[]>([]);
 
-  const fetchSpendings = async () => {
-    const res = await fetch("http://localhost:3001/spending", {
-      credentials: "include",
-    });
-    if (res.ok) {
-      setSpendings(await res.json());
-    }
-  };
+  const queryClient = useQueryClient();
+  const {
+    data: spendings = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery<Spending[]>({
+    queryKey: ["spendings"],
+    queryFn: () => apiFetch("/spending"),
+  });
 
-  useEffect(() => {
-    fetchSpendings();
-  }, []);
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) =>
+      apiFetch(`/spending/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["spendings"] });
+    },
+  });
 
-  const handleDelete = async (id: string) => {
-    await fetch(`http://localhost:3001/spending/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    setSpendings((prev) => prev.filter((s) => s.id !== id));
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
   };
 
   const handleSignOut = async () => {
@@ -67,7 +69,7 @@ export default function Dashboard() {
           <h2 className="text-base font-semibold text-gray-900 mb-4">
             Add spending
           </h2>
-          <AddSpending onAdded={fetchSpendings} />
+          <AddSpending />
         </div>
 
         {/* Summary */}
@@ -80,7 +82,15 @@ export default function Dashboard() {
 
         {/* Spending list */}
         <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100">
-          {spendings.length === 0 ? (
+          {isLoading ? (
+            <p className="text-sm text-gray-400 text-center py-10">
+              Loading...
+            </p>
+          ) : isError ? (
+            <p className="text-sm text-red-500 text-center py-10">
+              {(error as Error).message}
+            </p>
+          ) : spendings.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-10">
               No spendings yet. Add one above!
             </p>
@@ -108,6 +118,7 @@ export default function Dashboard() {
                   <button
                     onClick={() => handleDelete(s.id)}
                     className="text-xs text-red-400 hover:text-red-600 transition-colors"
+                    disabled={deleteMutation.isPending}
                   >
                     Delete
                   </button>

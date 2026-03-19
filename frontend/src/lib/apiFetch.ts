@@ -1,0 +1,33 @@
+export async function apiFetch<T>(
+  endpoint: string,
+  { body, ...customConfig }: { body?: unknown } & RequestInit = {},
+): Promise<T> {
+  const headers: HeadersInit = {
+    "content-type": "application/json",
+    ...(customConfig.headers || {}),
+  };
+
+  const config: RequestInit = {
+    method: body ? "POST" : "GET",
+    ...customConfig,
+    headers,
+  };
+
+  if (body) {
+    config.body = JSON.stringify(body);
+  }
+
+  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
+  const response = await fetch(
+    `${baseUrl}/${endpoint.replace(/^\//, "")}`,
+    config,
+  );
+
+  const data = await response.json().catch(() => undefined);
+
+  if (response.ok) {
+    return data;
+  } else {
+    return Promise.reject(data);
+  }
+}
