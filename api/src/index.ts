@@ -2,20 +2,22 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { auth } from "./lib/auth.ts";
+import spendingRoutes from "./routes/spending.ts";
 
 const app = new Hono();
 
-app.use(
-  "/auth/*",
-  cors({
-    origin: ["http://localhost:5173"],
-    allowMethods: ["GET", "POST", "OPTIONS"],
-    allowHeaders: ["Content-Type"],
-    credentials: true,
-  }),
-);
+const corsMiddleware = cors({
+  origin: ["http://localhost:5173"],
+  allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
+  allowHeaders: ["Content-Type"],
+  credentials: true,
+});
+
+app.use("/auth/*", corsMiddleware);
+app.use("/spending/*", corsMiddleware);
 
 app.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw));
+app.route("/spending", spendingRoutes);
 
 app.get("/", async (c) => {
   return c.json({ message: "Hello, World!" });

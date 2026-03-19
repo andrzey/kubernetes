@@ -8,6 +8,13 @@
       "when": 1773860918101,
       "tag": "0000_woozy_centennial",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773949226392,
+      "tag": "0001_lumpy_scarecrow",
+      "breakpoints": true
     }
   ]
 }
