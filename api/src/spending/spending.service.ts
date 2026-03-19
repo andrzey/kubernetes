@@ -1,5 +1,6 @@
 import { SpendingRepository } from "./spending.repository.ts";
 import { SPENDING_CATEGORIES } from "../db/schema/spending-schema.ts";
+import { BadRequestError, NotFoundError } from "../lib/errors.ts";
 
 export type CreateSpendingInput = {
   amount: number;
@@ -20,7 +21,7 @@ export class SpendingService {
 
   async addSpending(userId: string, input: CreateSpendingInput) {
     if (!input.amount || !input.category) {
-      throw new Error("amount and category are required");
+      throw new BadRequestError("amount and category are required");
     }
 
     return this.repository.create({
@@ -35,7 +36,7 @@ export class SpendingService {
     const row = await this.repository.deleteById(id);
 
     if (!row || row.userId !== userId) {
-      throw new Error("Not found");
+      throw new NotFoundError();
     }
 
     return row;
