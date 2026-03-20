@@ -3,18 +3,19 @@ export async function apiFetch<T>(
   { body, ...customConfig }: { body?: unknown } & RequestInit = {},
 ): Promise<T> {
   const headers: HeadersInit = {
-    "content-type": "application/json",
+    "Content-Type": "application/json",
     ...(customConfig.headers || {}),
   };
 
   const config: RequestInit = {
     method: body ? "POST" : "GET",
+    credentials: "include",
     ...customConfig,
     headers,
   };
 
   if (body) {
-    config.body = JSON.stringify(body);
+    config.body = body;
   }
 
   const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
