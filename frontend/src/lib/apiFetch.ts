@@ -18,7 +18,7 @@ export async function apiFetch<T>(
     config.body = body;
   }
 
-  const baseUrl = import.meta.env.VITE_BASE_URL || "";
+  const baseUrl = import.meta.env.VITE_BASE_URL || "/api";
   const response = await fetch(
     `${baseUrl}/${endpoint.replace(/^\//, "")}`,
     config,
