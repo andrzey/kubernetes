@@ -12,6 +12,10 @@ spec:
       labels:
         app: hono-api
     spec:
+      hostAliases:
+        - ip: "172.17.0.1"
+          hostnames:
+            - "host.k3d.internal"
       imagePullSecrets:
         - name: ghcr-secret
       containers:
