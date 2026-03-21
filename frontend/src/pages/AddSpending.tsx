@@ -1,10 +1,31 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "../lib/apiFetch";
 import { TextField } from "../components/TextField";
 import { Select } from "../components/Select";
 import { Button } from "../components/Button";
+
+const useAddSpending = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: Form) => {
+      const category = data.useCustomCategory
+        ? data.customCategory
+        : data.category;
+
+      return apiFetch("/spending", {
+        method: "POST",
+        body: JSON.stringify({
+          amount: Number(data.amount),
+          category,
+          description: data.description || undefined,
+        }),
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["spendings"] }),
+  });
+};
 
 const STANDARD_CATEGORIES = [
   "Food & Dining",
@@ -22,41 +43,32 @@ type Form = {
   category: string;
   customCategory: string;
   description: string;
+  useCustomCategory: boolean;
 };
 
 export default function AddSpending() {
-  const [useCustomCategory, setUseCustomCategory] = useState(false);
-  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Form>({ defaultValues: { category: STANDARD_CATEGORIES[0] } });
-
-  const mutation = useMutation({
-    mutationFn: async (data: Form) => {
-      const category = useCustomCategory ? data.customCategory : data.category;
-      return apiFetch("/spending", {
-        method: "POST",
-        body: JSON.stringify({
-          amount: Number(data.amount),
-          category,
-          description: data.description || undefined,
-        }),
-      });
+    watch,
+    setValue,
+  } = useForm<Form>({
+    defaultValues: {
+      category: STANDARD_CATEGORIES[0],
+      useCustomCategory: false,
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["spendings"] }),
   });
 
-  const onSubmit = (data: Form) => {
-    mutation.mutate(data, {
-      onSuccess: () => {
-        reset();
-        setUseCustomCategory(false);
-      },
+  const { mutate, isPending } = useAddSpending();
+
+  const onSubmit = (data: Form) =>
+    mutate(data, {
+      onSuccess: () => reset(),
     });
-  };
+
+  const useCustomCategory = watch("useCustomCategory");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -73,6 +85,7 @@ export default function AddSpending() {
             min: { value: 0.01, message: "Must be greater than 0" },
           })}
         />
+
         <div>
           {useCustomCategory ? (
             <TextField
@@ -98,10 +111,11 @@ export default function AddSpending() {
               ))}
             </Select>
           )}
+
           <button
             type="button"
             className="mt-1 text-xs text-indigo-600 hover:underline"
-            onClick={() => setUseCustomCategory((v) => !v)}
+            onClick={() => setValue("useCustomCategory", !useCustomCategory)}
             disabled={isSubmitting}
           >
             {useCustomCategory
@@ -122,8 +136,8 @@ export default function AddSpending() {
         {...register("description")}
       />
 
-      <Button type="submit" disabled={isSubmitting || mutation.isPending}>
-        {mutation.isPending ? "Adding..." : "Add spending"}
+      <Button type="submit" disabled={isPending}>
+        {isPending ? "Adding..." : "Add spending"}
       </Button>
     </form>
   );
