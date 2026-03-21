@@ -30,7 +30,17 @@ app.use("/auth/*", corsMiddleware);
 app.use("/spending/*", corsMiddleware);
 app.use("/spending/*", sessionMiddleware);
 
-app.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw));
+app.on(["POST", "GET"], "/auth/*", async (c) => {
+  const res = await auth.handler(c.req.raw);
+
+  const url = new URL(c.req.url);
+  if (url.pathname.includes("/verify-email") && res.ok) {
+    return c.redirect("http://localhost:5173"); // TODO: This should come from env.
+  }
+
+  return res;
+});
+
 app.route("/spending", spendingRoutes);
 
 app.get("/", async (c) => {
