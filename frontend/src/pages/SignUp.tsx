@@ -14,21 +14,24 @@ export default function SignUp() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<Form>();
 
-  const onSubmit = async (data: Form) => {
-    const { error } = await authClient.signUp.email({
-      name: data.name,
-      email: data.email,
-      password: data.password,
+  const onSubmit = async (formData: Form) => {
+    const { error, data } = await authClient.signUp.email({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
       callbackURL: "/dashboard",
     });
 
     if (error) {
       alert(error.message);
       return;
+    }
+
+    if (data?.user.emailVerified == false) {
+      navigate({ to: "/verify-email" });
     }
 
     navigate({ to: "/dashboard" });
@@ -81,7 +84,7 @@ export default function SignUp() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               {...register("password", {
                 required: "Password is required",
-                minLength: { value: 8, message: "Minimum 8 characters" },
+                minLength: { value: 4, message: "Minimum 4 characters" },
               })}
             />
             {errors.password && (
@@ -100,8 +103,8 @@ export default function SignUp() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               {...register("confirmPassword", {
                 required: "Please confirm your password",
-                validate: (val) =>
-                  val === watch("password") || "Passwords do not match",
+                validate: (val, values) =>
+                  val === values.password || "Passwords do not match",
               })}
             />
             {errors.confirmPassword && (

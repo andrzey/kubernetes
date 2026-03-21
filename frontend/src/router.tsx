@@ -9,19 +9,25 @@ import { authClient } from "./auth";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
 });
 
-// Layout route for unauthenticated pages (login, signup)
+// Layout route for unauthenticated pages (login, signup, verify-email)
 // Redirects to /dashboard if user is already logged in
 const authLayout = createRoute({
   getParentRoute: () => rootRoute,
   id: "_authLayout",
-  beforeLoad: async () => {
+  beforeLoad: async (ctx) => {
     const session = await authClient.getSession();
-    if (session.data?.user) {
+
+    if (ctx.location.pathname.includes("/verify-email") && !session.data) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (session.data?.user.emailVerified == true) {
       throw redirect({ to: "/dashboard" });
     }
   },
@@ -37,6 +43,10 @@ const protectedLayout = createRoute({
     const session = await authClient.getSession();
     if (!session.data?.user) {
       throw redirect({ to: "/login" });
+    }
+
+    if (!session.data.user.emailVerified) {
+      throw redirect({ to: "/verify-email" });
     }
   },
   component: () => <Outlet />,
@@ -62,6 +72,12 @@ const loginRoute = createRoute({
   component: Login,
 });
 
+const verifyEmailRoute = createRoute({
+  getParentRoute: () => authLayout,
+  path: "/verify-email",
+  component: VerifyEmail,
+});
+
 const dashboardRoute = createRoute({
   getParentRoute: () => protectedLayout,
   path: "/dashboard",
@@ -69,7 +85,7 @@ const dashboardRoute = createRoute({
 });
 
 const routeTree = rootRoute.addChildren([
-  authLayout.addChildren([signUpRoute, loginRoute]),
+  authLayout.addChildren([signUpRoute, loginRoute, verifyEmailRoute]),
   protectedLayout.addChildren([indexRoute, dashboardRoute]),
 ]);
 
