@@ -35,7 +35,7 @@ app.on(["POST", "GET"], "/auth/*", async (c) => {
 
   const url = new URL(c.req.url);
   if (url.pathname.includes("/verify-email") && res.ok) {
-    return c.redirect("http://localhost:5173"); // TODO: This should come from env.
+    return c.redirect(process.env.FRONTEND_URL ?? "");
   }
 
   return res;
