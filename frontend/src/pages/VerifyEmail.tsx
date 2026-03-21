@@ -1,6 +1,24 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { authClient } from "../auth";
+import { useEffect } from "react";
 
 export default function VerifyEmail() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      const { data } = await authClient.getSession();
+
+      if (data?.user?.emailVerified) {
+        navigate({ to: "/dashboard", replace: true });
+      }
+    };
+
+    const interval = setInterval(checkStatus, 2000);
+
+    return () => clearInterval(interval);
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
