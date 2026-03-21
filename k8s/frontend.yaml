@@ -16,8 +16,11 @@ spec:
         - name: ghcr-secret
       containers:
         - name: frontend-container
-          image: ghcr.io/andrzey/my-frontend:9bffce35c3c7fa073f787fd324b43b12af076794
+          image: ghcr.io/andrzey/my-frontend:82f72c41a42944bb6fe2bb46296cf87cdef8107a
           imagePullPolicy: Always
+          env:
+            - name: NODE_ENV
+              value: "production"
           ports:
             - containerPort: 80
 ---
