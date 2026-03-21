@@ -20,8 +20,8 @@ export class EmailService {
     if (!to || !token) {
       throw new Error("to and token are required");
     }
-
-    const verifyUrl = `${process.env.BETTER_AUTH_URL}/auth/verify-email?token=${token}`;
+    const apiPrefix = process.env.NODE_ENV === "production" ? "/api" : "";
+    const verifyUrl = `${process.env.BETTER_AUTH_URL}${apiPrefix}/auth/verify-email?token=${token}`;
 
     const html = `
         <div style="font-family: sans-serif; color: #111;">
