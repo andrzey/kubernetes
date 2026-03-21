@@ -74,9 +74,6 @@ export default function AddSpending() {
           })}
         />
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Category
-          </label>
           {useCustomCategory ? (
             <TextField
               label="Custom category"
@@ -89,6 +86,7 @@ export default function AddSpending() {
             />
           ) : (
             <Select
+              label="Category"
               disabled={isSubmitting}
               {...register("category")}
               className="bg-white"
