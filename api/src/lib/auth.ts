@@ -10,6 +10,9 @@ export const auth = betterAuth({
   basePath: "/auth",
   trustedOrigins: ["http://localhost:5173", "http://frontend.local:8080"],
   debugLogs: true,
+  cookie: {
+    domain: "local",
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 4,
