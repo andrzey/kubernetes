@@ -18,7 +18,7 @@ export async function apiFetch<T>(
     config.body = body;
   }
 
-  const baseUrl = import.meta.env.VITE_BASE_URL || "/api";
+  const baseUrl = import.meta.env.VITE_BASE_URL || "http://api.local:8080";
   const response = await fetch(
     `${baseUrl}/${endpoint.replace(/^\//, "")}`,
     config,

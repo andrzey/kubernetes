@@ -19,6 +19,9 @@ app.onError((err, c) => {
   return c.json({ error: "Internal server error" }, 500);
 });
 
+// TODO: Fiks csrf token
+// Fiks honeypot
+// Fiks request limiting
 const corsMiddleware = cors({
   origin: ["http://localhost:5173"],
   allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
