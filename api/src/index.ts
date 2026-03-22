@@ -23,7 +23,7 @@ app.onError((err, c) => {
 // Fiks honeypot
 // Fiks request limiting
 const corsMiddleware = cors({
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "http://frontend.local:8080"],
   allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
   allowHeaders: ["Content-Type"],
   credentials: true,
