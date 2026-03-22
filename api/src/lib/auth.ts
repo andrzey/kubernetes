@@ -8,7 +8,7 @@ import { emailService } from "../email/email.service.ts";
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   basePath: "/auth",
-  trustedOrigins: ["http://localhost:5173", "http://localhost:8080"],
+  trustedOrigins: ["http://localhost:5173", "http://frontend.local:8080"],
   debugLogs: true,
   emailAndPassword: {
     enabled: true,
